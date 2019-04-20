@@ -18,32 +18,31 @@ class AkademikController extends Controller
     public function index(){
 		return view('akademik');
     }
-
-
-    // public function getMatakuliahDetail($id){
-    //     $matkul = MataKuliah::find($id);
-    //     $dosen = MataKuliah::find($id)->pengajar;
-    //     return view('matkul-detail', compact('dosen', 'matkul'));
-    // }
-
-    // public function getPengajarDetail($id){
-    //     $dosens = Dosen::find($id);
-    //     $dosen = Dosen::find($id)->mengajars;
-    //     return view('detail-dosen', compact('dosen','dosens'));
-		// }
 		
 		public function getFrs(){
 			$matkul=DataAkademik::all();
 			if(Auth::user()->role==2){
 				$dataFrs = Frs::where('id_mahasiswa', Auth::user()->id)->get();
 				$user=User::find(Auth::user()->id+25);	
-				return view('ambil-frs', compact('matkul','user', 'dataFrs'));
+				if (Auth::user()->status==0) {
+					return view('ambil-frs', compact('matkul','user', 'dataFrs'));
+				}
+				else	{
+					return view('hasil-frs', compact('matkul','user', 'dataFrs'));
+				}
+			
 			}
 			else{
 				$dataFrs = Frs::where('id_mahasiswa', Auth::user()->id-25)->get();
 				$user=User::find(Auth::user()->id-25);
-				return view('ambil-frs', compact('matkul','user', 'dataFrs'));}
-		}
+				if ($user->status==0) {
+					return view('ambil-frs', compact('matkul','user', 'dataFrs'));
+				}
+				else {
+					return view('hasil-frs', compact('matkul','user', 'dataFrs'));
+				}
+	}
+}
 
 		public function akademikFrs(Request $request)
 		{
@@ -55,9 +54,7 @@ class AkademikController extends Controller
 				'id_matkul' => $data->id_matkul ]);
 			}
 			else {
-				return $request;
 			$data = DataAkademik::find($request->matkul);
-			return $data;
 			DB::table('frs')->insert([
 				'id_dosen' => $data->id_dosen,
 				'id_mahasiswa' => Auth::user()->id-25,
@@ -81,27 +78,50 @@ class AkademikController extends Controller
 		}
 		public function getMatkul()
 		{
-			$dataFrs = Frs::where('id_dosen', Auth::user()->id-25)->get();
+			$dataFrs = Frs::where('id_dosen', Auth::user()->id)->get();
 			return view('nilai', compact('dataFrs'));
 		}
 
 		public function show($id)
     {
-    	$dataFrs = Frs::where('id_dosen', Auth::user()->id-25)->get();
+			$dataFrs = Frs::where('id_dosen', Auth::user()->id)->get();
     	return view('kelas', compact('dataFrs'));
 		}
 		
 		public function editMatkul($id)
 		{
-			$dataFrs = Frs::where('id_dosen', Auth::user()->id-25)->get()[0];			
+			$dataFrs = Frs::where('id_dosen', Auth::user()->id)->get()[0];			
 			$dataMatkul = MataKuliah::all();
 			return view('edit', compact('dataFrs','dataMatkul'));
 		}
 
 		Public function updateMatkul(Request $request, $id) 
 		{
+			$value = ((int)$request->tugas+(int)$request->quis+(int)$request->uts+(int)$request->uas)/4 ;
+			switch ($value) {
+				case $value>85:
+						$value="A";
+						break;
+				case $value>75:
+						$value="AB";
+						break;
+				case $value>70:
+						$value="B";
+						break;
+				case $value>60:
+						$value="BC";
+						break;
+				case $value>50:
+						$value="C";
+						break;
+				case $value>65:
+						$value="D";
+						break;
+				default:
+						$value="E";
+		}
 			$frs = Frs::find($id);
-			$frs->nilai = $request->nilai;
+			$frs->nilai = $value;
 			$frs->save();
 			return $this->show($id);
 		}

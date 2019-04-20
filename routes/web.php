@@ -18,7 +18,7 @@ Route::get('/', function () {
 Route::get('/akademik', 'AkademikController@index');
 
 Route::get('/akademik/frs', 'AkademikController@getFrs');
-Route::post('/akademik/frs', 'AkademikController@AkademikFrs');
+Route::post('/akademik/frs/ambil', 'AkademikController@AkademikFrs')->name('ambil.matkul');
 Route::delete('/akademik/frs', 'AkademikController@destroyFrs');
 Route::put('/akademik/frs', 'AkademikController@accFrs');
 

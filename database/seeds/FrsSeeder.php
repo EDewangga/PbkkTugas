@@ -16,7 +16,7 @@ class FrsSeeder extends Seeder
 					DB::table('data_akademik')->insert
 					([
 						'id_matkul' => rand(1,95),
-						'id_dosen' => rand(1,25)
+						'id_dosen' => rand(26,50)
 					]);
 				}
     }

@@ -18,8 +18,8 @@
 									<div class="card">
 										@foreach($dataFrs as $frs)
 										<tr>
-											<th>{{$frs->dosen->kode}}</th>
-											<th>{{$frs->dosen->name}}</th>
+											<th>{{$frs->mahasiswa->kode}}</th>
+											<th>{{$frs->mahasiswa->name}}</th>
 											<th>{{$frs->nilai}}</th>		
 										<th><a href="{{url('/akademik/nilai/'.$frs->id.'/edit')}}" class="Button">Edit</a></tr>
 									@endforeach
